@@ -6,15 +6,32 @@ public class Cube : MonoBehaviour
 {
     [SerializeField] private Texture _texture;
 
-    float _rotSpeed = 40.0f;
-    float _angle = 0.0f;
+    // Material
+    [SerializeField] private Material _targetMaterial;
+
+    // 월드변환
+    public Vector3 _position = Vector3.zero;    //  이동 (translate)
+    public Vector3 _rotation = Vector3.zero;    //  회전 (rotation) (euler angle)
+    public Vector3 _scale = Vector3.one;        //  크기 (scale)
+
+    // 카메라
+    public Camera _targetCamera;
+
+    public float _moveSpeed = 5.0f; //  이동 속도
+    public float _rotationSpeed = 70.0f; //  회전 속도
+
+    private Material materialInstance = null;  // Material
 
     // Start is called before the first frame update
     void Start()
     {
         MakeCube();
-    }
 
+        if (_targetMaterial == null) // material
+        {
+            materialInstance = GetComponent<MeshRenderer>().material;
+        }
+    }
     void MakeCube()
     {
         // 정점버퍼에 입력할 정점.
@@ -187,7 +204,34 @@ public class Cube : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //_angle += Time.deltaTime * _rotSpeed;
-        //this.transform.rotation = Quaternion.Euler(0.0f, 0.0f, _angle);
+
+            HandleInput();
+            UnseUnityMatrices();
+            //_angle += Time.deltaTime * _rotSpeed;
+            //this.transform.rotation = Quaternion.Euler(0.0f, 0.0f, _angle);
+    }
+
+    void HandleInput()
+    {
+        float deltaTime = Time.deltaTime;
+
+        float horizontal = Input.GetAxis("Horizontal"); // A/D <-, ->
+        float vertical = Input.GetAxis("Vertical");      // W/S 
+
+        this.transform.position += Vector3.forward * vertical * _moveSpeed * deltaTime;
+
+        this.transform.position += Vector3.right * horizontal * _moveSpeed * deltaTime;
+    }
+
+    void UnseUnityMatrices()
+    {
+        Matrix4x4 worldMatrix = transform.localToWorldMatrix;   //  월드변환 행렬
+        Matrix4x4 viewMatrix = _targetCamera.worldToCameraMatrix;   //  뷰변환 행렬
+        Matrix4x4 projectionMatrix = _targetCamera.projectionMatrix; //  투영변환 행렬
+
+        // shader에 값을 셋팅
+        materialInstance.SetMatrix("_WorldMatrix", worldMatrix);
+        materialInstance.SetMatrix("_ViewMatrix", viewMatrix);
+        materialInstance.SetMatrix("_ProjectionMatrix", projectionMatrix);
     }
 }
