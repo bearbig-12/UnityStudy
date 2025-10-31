@@ -1,0 +1,2 @@
+D:\WHH(Weekend)\WeekDayEdu_2025_1002\Unity_Lecture_2차_3DBase(20250904~)\Source\3.Unity_Base\20251022_Unity_Lecture_Source\obj\Debug\Assembly-CSharp.csproj.AssemblyReference.cache
+D:\WHH(Weekend)\WeekDayEdu_2025_1002\Unity_Lecture_2차_3DBase(20250904~)\Source\3.Unity_Base\20251022_Unity_Lecture_Source\obj\Debug\Assembly-CSharp.csproj.CoreCompileInputs.cache
