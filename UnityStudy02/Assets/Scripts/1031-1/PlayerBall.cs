@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerBall : MonoBehaviour
 {
-    
+
 
     private float _movePower = 10.0f;
     private Rigidbody _myRigid;
@@ -51,16 +51,26 @@ public class PlayerBall : MonoBehaviour
         //this.transform.rotation = Quaternion.LookRotation(new Vector3(moveX, 0.0f, moveY).normalized);
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.collider.tag.CompareTo("EnemyBall") == 0)
+        {
+            collision.collider.gameObject.GetComponent<MeshRenderer>().material.color = Color.black;
+            collision.collider.gameObject.GetComponent<EnemyBall>().StartDestroy();
+
+        }
+    }
+
 
     void FixedUpdate()
-    {        
+    {
         PhysicsMove2();
-     
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 }
