@@ -47,6 +47,59 @@ public class BallGameMain : MonoBehaviour
         }
     }
 
+    public void MakeEnemyBall(int enemyCount, Vector3 pos)
+    {
+        for (int i = 0; i < enemyCount; i++)
+        {
+            Vector2 createPos = Random.insideUnitCircle * _radius;
+
+            var ball = Instantiate(_EnemyBallPrefab, new Vector3(pos.x + createPos.x, 2.0f, pos.z + createPos.y), Quaternion.identity, _EnemyParent);
+            ball.GetComponent<EnemyBall>().SetGamePlay(this);
+        }
+
+        _ballCount += enemyCount;
+
+    }
+
+    public void DeleteEnemyBall(int Count)
+    {
+        // 씬에 있는 Enemy Ball 찾기
+        List<GameObject> EnemyList = new List<GameObject>(GameObject.FindGameObjectsWithTag("EnemyBall"));
+
+        if(EnemyList.Count < Count)
+        {
+            Count = EnemyList.Count;
+        }
+
+        for (int i = 0; i < Count; i++)
+        {
+            if(EnemyList.Count == 0)
+            {
+                break;
+            }
+            int index = Random.Range(0, EnemyList.Count);
+
+            Destroy(EnemyList[index]);
+
+            EnemyList.RemoveAt(index);
+
+            _ballCount--;
+        }
+
+        _EnemyBallCountText.text = _ballCount.ToString();
+
+
+        if (_ballCount <= 0)
+        {
+            _GameClearText.text = "Game Clear";
+            _GameClearText.gameObject.SetActive(true);
+
+            _isPlay = false;
+
+        }
+
+    }
+
     public void DecreaseDead()
     {
         _ballCount--;
@@ -60,12 +113,31 @@ public class BallGameMain : MonoBehaviour
 
             _isPlay = false;
 
+
         }
     }
 
-    void GameOver()
+    public void AddTime(float time)
+    {
+        _lapTime += time;
+    }
+
+    public void MinusTime(float time)
+    {
+        _lapTime -= time;
+    }
+
+    public void GameOver()
     {
         _EnemyBallCtrl.StopAllBalls();
+
+        _isPlay = false;
+
+        _GameClearText.text = "Game Over";
+        _GameClearText.gameObject.SetActive(true);
+        // 게임 일시정지
+        Time.timeScale = 0f;
+
     }
 
     // Update is called once per frame

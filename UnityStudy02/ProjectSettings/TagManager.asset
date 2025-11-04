@@ -9,6 +9,7 @@ TagManager:
   - Tank
   - CannonBall
   - EnemyBall
+  - PlayBall
   layers:
   - Default
   - TransparentFX

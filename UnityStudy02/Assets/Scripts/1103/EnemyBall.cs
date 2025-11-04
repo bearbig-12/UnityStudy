@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EnemyBall : MonoBehaviour
 {
-     private BallGameMain _GamePlay;
+    private BallGameMain _GamePlay;
 
     public void StartDestroy()
     {
@@ -27,9 +27,8 @@ public class EnemyBall : MonoBehaviour
 
     public void Dead()
     {
-
+        _GamePlay.DecreaseDead();
         Destroy(this.gameObject);
-
     }
 
     private void FixedUpdate()
@@ -37,7 +36,7 @@ public class EnemyBall : MonoBehaviour
         // ¶¥¿¡¼­ ¶³¾îÁø enemyBall Ã³¸®
         if (this.transform.position.y <= 0.0f)
         {
-
+            _GamePlay.DecreaseDead();
             Destroy(this.gameObject);
         }
     }
