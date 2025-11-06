@@ -10,6 +10,8 @@ TagManager:
   - CannonBall
   - EnemyBall
   - PlayBall
+  - Frog
+  - Land
   layers:
   - Default
   - TransparentFX
