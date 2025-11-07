@@ -4,15 +4,25 @@ using UnityEngine;
 
 public class FrogCube : MonoBehaviour
 {
-    enum State
+    public enum State
     {
         Jump,
         Ground
     }
 
+    enum Type
+    {
+        UpDown,
+        Flying
+    }
+
     private Rigidbody _rb;
     private float _jumpPower = 1.0f;
-    State _currentState = State.Ground;
+    State _currentState = State.Jump;
+
+    public State CurrentState { get { return _currentState; } }
+
+    [SerializeField] private Type _type;
 
     // Start is called before the first frame update
     void Start()
@@ -21,14 +31,24 @@ public class FrogCube : MonoBehaviour
 
         _jumpPower = Random.Range(10.0f, 20.0f);
 
-        Jump();
-
-
+        //Jump();
     }
 
     public void Jump()
     {
-        _rb.AddForce(Vector3.up * _jumpPower, ForceMode.Impulse);
+        switch (_type)
+        {
+            case Type.UpDown:
+                _rb.AddForce(Vector3.up * _jumpPower, ForceMode.Impulse);
+                break;
+
+            case Type.Flying:
+                _rb.AddForce(new Vector3(0.0f, 1.0f, -1.0f).normalized * _jumpPower, ForceMode.Impulse);
+                break;
+        }
+
+        _currentState = State.Jump;
+
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -49,6 +69,7 @@ public class FrogCube : MonoBehaviour
 
     public void Hit()
     {
+        Debug.Log("Hit2");
         if (_currentState == State.Jump)
         {
             Destroy(this.gameObject);
