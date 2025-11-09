@@ -8,7 +8,8 @@ public enum PlayerState
 {
     Walk,
     Idle,
-    Attack
+    Attack,
+    Defence
 };
 
 public class Sprite2DTest : MonoBehaviour
@@ -17,6 +18,8 @@ public class Sprite2DTest : MonoBehaviour
     [SerializeField] private Sprite[] _walkSprites;
     [SerializeField] private Sprite[] _idleSprites;
     [SerializeField] private Sprite[] _attackSprite;
+    [SerializeField] private Sprite[] _defenceSprite;
+
 
 
     private int _animIndex = 0;
@@ -93,6 +96,26 @@ public class Sprite2DTest : MonoBehaviour
         _spendTime += Time.deltaTime;
     }
 
+    void Defence()
+    {
+        if (_spendTime >= _nextFrameTime)
+        {
+            _spendTime = 0.0f;
+
+            if (_animIndex >= _defenceSprite.Length)
+            {
+                _animIndex = 0;
+
+                // Defence 애니메이션이 끝났을때 idle상태로 변경.
+                _currentState = PlayerState.Idle;
+            }
+
+            _renderer.sprite = _defenceSprite[_animIndex++];
+        }
+
+        _spendTime += Time.deltaTime;
+    }
+
 
     void Move()
     {
@@ -113,6 +136,10 @@ public class Sprite2DTest : MonoBehaviour
             case PlayerState.Attack:
                 Attack();
                 break;
+
+            case PlayerState.Defence:
+                Defence(); 
+                break;
         }
 
         // 키입력에 따른 상태처리
@@ -128,7 +155,7 @@ public class Sprite2DTest : MonoBehaviour
         }
         else
         {
-            if (_currentState != PlayerState.Attack)
+            if (_currentState != PlayerState.Attack && _currentState != PlayerState.Defence)
             {
                 _currentState = PlayerState.Idle;
             }
@@ -150,6 +177,16 @@ public class Sprite2DTest : MonoBehaviour
             _animIndex = 0;
 
             _currentState = PlayerState.Attack;
+        }
+
+        if(Input.GetKeyDown(KeyCode.F))
+        {
+            if( _currentState == PlayerState.Defence) return;
+
+            Debug.Log("Defence");
+            _animIndex = 0;
+
+            _currentState = PlayerState.Defence;
         }
 
     }
