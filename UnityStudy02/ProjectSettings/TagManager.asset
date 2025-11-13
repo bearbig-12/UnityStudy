@@ -12,6 +12,7 @@ TagManager:
   - PlayBall
   - Frog
   - Land
+  - Rock
   layers:
   - Default
   - TransparentFX

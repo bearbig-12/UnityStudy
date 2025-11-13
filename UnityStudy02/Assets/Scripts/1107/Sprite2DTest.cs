@@ -9,7 +9,7 @@ public enum PlayerState
     Walk,
     Idle,
     Attack,
-    Defence
+    Defense
 };
 
 public class Sprite2DTest : MonoBehaviour
@@ -18,8 +18,7 @@ public class Sprite2DTest : MonoBehaviour
     [SerializeField] private Sprite[] _walkSprites;
     [SerializeField] private Sprite[] _idleSprites;
     [SerializeField] private Sprite[] _attackSprite;
-    [SerializeField] private Sprite[] _defenceSprite;
-
+    [SerializeField] private Sprite[] _defenseSprite;
 
 
     private int _animIndex = 0;
@@ -32,12 +31,26 @@ public class Sprite2DTest : MonoBehaviour
 
     private PlayerState _currentState = PlayerState.Idle; //  현재 상태 저장.
 
+    [SerializeField] private BoxCollider _LeftAttackCollider;   //  공격시 충돌 처리용 Collider
+    [SerializeField] private BoxCollider _RightAttackCollider;  // 공격시 충돌 처리용 Collider
+    [SerializeField] private BoxCollider _BlockCollider;    // 방어용 Collider
+
 
     // Start is called before the first frame update
     void Start()
     {
         _renderer.sprite = _walkSprites[_animIndex];
 
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        Debug.Log("Attack");
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        Debug.Log("Trigger Attack");
     }
 
     void Walk()
@@ -86,8 +99,22 @@ public class Sprite2DTest : MonoBehaviour
             {
                 _animIndex = 0;
 
+                _LeftAttackCollider.enabled = false;
+                _RightAttackCollider.enabled = false;
+
                 // Attack 애니메이션이 끝났을때 idle상태로 변경.
                 _currentState = PlayerState.Idle;
+            }
+            else if (_animIndex == 3)
+            {
+                if (_dir)
+                {
+                    _LeftAttackCollider.enabled = true;
+                }
+                else
+                {
+                    _RightAttackCollider.enabled = true;
+                }
             }
 
             _renderer.sprite = _attackSprite[_animIndex++];
@@ -96,21 +123,22 @@ public class Sprite2DTest : MonoBehaviour
         _spendTime += Time.deltaTime;
     }
 
-    void Defence()
+    void Defense()
     {
         if (_spendTime >= _nextFrameTime)
         {
             _spendTime = 0.0f;
 
-            if (_animIndex >= _defenceSprite.Length)
+            if (_animIndex >= _defenseSprite.Length)
             {
                 _animIndex = 0;
+                _BlockCollider.enabled = false;
 
-                // Defence 애니메이션이 끝났을때 idle상태로 변경.
+                // Attack 애니메이션이 끝났을때 idle상태로 변경.
                 _currentState = PlayerState.Idle;
             }
 
-            _renderer.sprite = _defenceSprite[_animIndex++];
+            _renderer.sprite = _defenseSprite[_animIndex++];
         }
 
         _spendTime += Time.deltaTime;
@@ -137,12 +165,15 @@ public class Sprite2DTest : MonoBehaviour
                 Attack();
                 break;
 
-            case PlayerState.Defence:
-                Defence(); 
+            case PlayerState.Defense:
+                Defense();
                 break;
         }
 
         // 키입력에 따른 상태처리
+
+        if (_currentState == PlayerState.Attack || _currentState == PlayerState.Defense) return;
+
         if (xmove < 0.0f)
         {
             _currentState = PlayerState.Walk;
@@ -155,7 +186,7 @@ public class Sprite2DTest : MonoBehaviour
         }
         else
         {
-            if (_currentState != PlayerState.Attack && _currentState != PlayerState.Defence)
+            if (_currentState != PlayerState.Attack)
             {
                 _currentState = PlayerState.Idle;
             }
@@ -179,14 +210,12 @@ public class Sprite2DTest : MonoBehaviour
             _currentState = PlayerState.Attack;
         }
 
-        if(Input.GetKeyDown(KeyCode.F))
+        if (Input.GetKeyDown(KeyCode.LeftShift))
         {
-            if( _currentState == PlayerState.Defence) return;
-
-            Debug.Log("Defence");
+            if (_currentState == PlayerState.Defense) return;
+            _BlockCollider.enabled = true;
             _animIndex = 0;
-
-            _currentState = PlayerState.Defence;
+            _currentState = PlayerState.Defense;
         }
 
     }
